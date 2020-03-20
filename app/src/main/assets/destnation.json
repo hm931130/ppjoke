@@ -1,0 +1,23 @@
+{
+  "main/tabs/dashboard": {
+    "isFragment": true,
+    "asStarter": false,
+    "needLogin": false,
+    "clazName": "com.beantechs.ppjoke.ui.dashboard.DashboardFragment",
+    "id": 1450339471
+  },
+  "main/tabs/home": {
+    "isFragment": true,
+    "asStarter": true,
+    "needLogin": false,
+    "clazName": "com.beantechs.ppjoke.ui.home.HomeFragment",
+    "id": 996853061
+  },
+  "main/tabs/notification": {
+    "isFragment": true,
+    "asStarter": false,
+    "needLogin": false,
+    "clazName": "com.beantechs.ppjoke.ui.notifications.NotificationsFragment",
+    "id": 2011114727
+  }
+}
