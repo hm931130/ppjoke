@@ -138,6 +138,7 @@ public class NavProcessor extends AbstractProcessor {
                 jsonObject.put("asStarter", asStarter);
                 jsonObject.put("clazName", clazName);
                 jsonObject.put("isFragment", isFragment);
+                jsonObject.put("pageUrl", pageUrl);
                 destMap.put(pageUrl, jsonObject);
             }
         }
