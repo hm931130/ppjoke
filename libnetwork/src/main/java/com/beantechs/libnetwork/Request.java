@@ -58,7 +58,7 @@ public abstract class Request<T, R extends Request> implements Cloneable {
     //缓存key
     private String cacheKey;
     //请求策略
-    private int mCacheStrategy = NET_CACHE;
+    private int mCacheStrategy = NET_ONLY;
     //同步请求需要设置返回值类型
     private Type mType;
 

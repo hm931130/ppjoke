@@ -1,34 +1,18 @@
 package com.beantechs.ppjoke;
 
 import android.os.Bundle;
-import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
-
-import com.beantechs.libnetwork.ApiResponse;
-import com.beantechs.libnetwork.ApiService;
-import com.beantechs.libnetwork.JsonCallback;
-import com.beantechs.libnetwork.PostRequest;
-import com.beantechs.libnetwork.Request;
-import com.beantechs.libnetwork.log.MyTestInterceptor;
-import com.beantechs.ppjoke.test.TestBean;
-import com.beantechs.ppjoke.utils.NavGraphBuilder;
-import com.beantechs.ppjoke.view.AppBottomBar;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
-import org.json.JSONObject;
-
-import java.util.List;
+import com.beantechs.ppjoke.utils.NavGraphBuilder;
+import com.beantechs.ppjoke.view.AppBottomBar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -49,31 +33,25 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         NavGraphBuilder.build(navController, this, fragment.getId());
 
-        ApiService.post("shapes")
-                .addHeader("hello", "world")
-                .addParams("name", "张飞")
-                .addParams("age", 10)
-                .execute(new JsonCallback<JSONObject>() {
-                    @Override
-                    public void onSuccess(ApiResponse<JSONObject> response) {
-                        super.onSuccess(response);
-                        Log.e("TAG", "onSuccess-" + response.toString());
-                    }
-
-                    @Override
-                    public void onError(ApiResponse<JSONObject> response) {
-                        super.onError(response);
-                        Log.e("TAG", "onError-" + response.toString());
-                    }
-
-                    @Override
-                    public void onCacheSuccess(ApiResponse<JSONObject> response) {
-                        super.onCacheSuccess(response);
-                        Log.e("TAG", "onCacheSuccess-" + response.toString());
-                    }
-                });
+    }
 
 
+    @Override
+    public void onBackPressed() {
+        //当前正在显示的页面destinationId
+        int currentPageId = navController.getCurrentDestination().getId();
+
+        //APP页面路导航结构图  首页的destinationId
+        int homeDestId = navController.getGraph().getStartDestination();
+
+        //如果当前正在显示的页面不是首页，而我们点击了返回键，则拦截。
+        if (currentPageId != homeDestId) {
+            appBottomBar.setSelectedItemId(homeDestId);
+            return;
+        }
+
+        //否则 finish，此处不宜调用onBackPressed。因为navigation会操作回退栈,切换到之前显示的页面。
+        finish();
     }
 
     @Override
