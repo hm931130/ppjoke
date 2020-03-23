@@ -16,7 +16,7 @@ public class JsonConvert implements Convert {
     public Object convert(String response, Type type) {
 
         JSONObject jsonObject = JSONObject.parseObject(response);
-        JSONObject data = jsonObject.getJSONObject("data");
+        Object data = jsonObject.get("data");
         return JSONObject.parseObject(data.toString(), type);
 //        if (data != null) {
 //            Object data1 = data.get("data");

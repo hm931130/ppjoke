@@ -1,5 +1,7 @@
 package com.beantechs.libnetwork;
 
+import com.beantechs.libnetwork.log.LogInterceptor;
+
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -21,17 +23,17 @@ public class ApiService {
 
     protected static final OkHttpClient okHttpClient;
     private static final int TIME_OUT = 5;
-    protected static Convert sConvert;
-    protected static String sBaseUrl;
+    protected static Convert sConvert; //数据转换器
+    protected static String sBaseUrl; //domain地址
+
     static {
 
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        LogInterceptor logInterceptor = new LogInterceptor();
         okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(TIME_OUT, TimeUnit.SECONDS)
                 .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
                 .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
-                .addInterceptor(loggingInterceptor)
+                .addInterceptor(logInterceptor)
                 .build();
 
         //http证书问题
@@ -53,7 +55,7 @@ public class ApiService {
         }};
         try {
             SSLContext ssl = SSLContext.getInstance("SSL");
-            ssl.init(null,trustManagers,new SecureRandom());
+            ssl.init(null, trustManagers, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(ssl.getSocketFactory());
             HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
                 @Override
@@ -66,6 +68,9 @@ public class ApiService {
         } catch (KeyManagementException e) {
             e.printStackTrace();
         }
+    }
+    public static void init(String baseUrl){
+      init(baseUrl,null);
     }
 
     public static void init(String baseUrl, Convert convert) {

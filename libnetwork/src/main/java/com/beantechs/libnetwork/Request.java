@@ -19,18 +19,25 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
-public abstract class Request<T, R> implements Cloneable{
+public abstract class Request<T, R extends Request> implements Cloneable {
     protected String mUrl;
+    //添加请求头
     protected HashMap<String, String> headers = new HashMap<>();
+    //添加请求参数
     protected HashMap<String, Object> params = new HashMap<>();
-
+    //自定义拦截器
+    protected List<Interceptor> interceptors = new ArrayList<>();
     //仅仅只访问本地缓存，即便本地缓存不存在，也不会发起网络请求
     public static final int CACHE_ONLY = 1;
     //先访问缓存，同时发起网络的请求，成功后缓存到本地
@@ -39,9 +46,26 @@ public abstract class Request<T, R> implements Cloneable{
     public static final int NET_ONLY = 3;
     //先访问网络，成功后缓存到本地
     public static final int NET_CACHE = 4;
+
+    //POST表单提交
+    public static final int POST_FORM = 1;
+    //json提交
+    public static final int POST_BODY = 2;
+    //默认为表单
+    protected int mPostType = POST_FORM;
+
+
+    //缓存key
     private String cacheKey;
-    private int mCacheStrategy = NET_ONLY;
+    //请求策略
+    private int mCacheStrategy = NET_CACHE;
+    //同步请求需要设置返回值类型
     private Type mType;
+
+    @IntDef({POST_FORM, POST_BODY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PostType {
+    }
 
     @IntDef({CACHE_ONLY, CACHE_FIRST, NET_ONLY, NET_CACHE})
     @Retention(RetentionPolicy.SOURCE)
@@ -65,13 +89,12 @@ public abstract class Request<T, R> implements Cloneable{
                 if (value.getClass() == String.class) {
                     params.put(key, value);
                 } else {
-
+                    //反射获取所属类型
                     Field field = value.getClass().getField("TYPE");
                     Class claz = (Class) field.get(null);
                     if (claz.isPrimitive()) { //如果为基本类型
                         params.put(key, value); //可以考虑转为String
                     }
-//
                 }
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
@@ -83,8 +106,25 @@ public abstract class Request<T, R> implements Cloneable{
         return (R) this;
     }
 
+    public R addInterceptor(Interceptor interceptor) {
+        if (!interceptors.contains(interceptor)) {
+            interceptors.add(interceptor);
+        }
+        return (R) this;
+    }
+
     public R cacheStrategy(@CacheStrategy int cacheStrategy) {
         mCacheStrategy = cacheStrategy;
+        return (R) this;
+    }
+
+    public R postType(@PostType int postType) {
+        mPostType = postType;
+        ParameterizedType parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();
+        Type argument = parameterizedType.getActualTypeArguments()[1];
+        if (argument == GetRequest.class) {
+            throw new RuntimeException("GET方法无需设置POST上传类型");
+        }
         return (R) this;
     }
 
@@ -103,7 +143,13 @@ public abstract class Request<T, R> implements Cloneable{
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
         addHeaders(builder);
         okhttp3.Request request = generateRequest(builder);
-        Call call = ApiService.okHttpClient.newCall(request);
+        OkHttpClient okHttpClient = ApiService.okHttpClient;
+        if (interceptors.size() > 0) {
+            for (Interceptor interceptor : interceptors) {
+                okHttpClient = okHttpClient.newBuilder().addInterceptor(interceptor).build();
+            }
+        }
+        Call call = okHttpClient.newCall(request);
         return call;
     }
 
@@ -121,6 +167,9 @@ public abstract class Request<T, R> implements Cloneable{
      */
     public ApiResponse<T> execute() {
 
+        if (mType == null) {
+            throw new RuntimeException("同步方法，response返回值类型必须设置");
+        }
         if (mCacheStrategy == CACHE_ONLY) {
             return readCache();
         }
@@ -131,7 +180,7 @@ public abstract class Request<T, R> implements Cloneable{
             result = parseResponse(response, null);
         } catch (Exception e) {
             e.printStackTrace();
-            if (result == null){
+            if (result == null) {
                 result = new ApiResponse<>();
                 result.message = e.getMessage();
             }
@@ -201,7 +250,7 @@ public abstract class Request<T, R> implements Cloneable{
         ApiResponse<T> result = new ApiResponse<>();
         Convert convert = ApiService.sConvert;
         try {
-            String content = response.body().toString();
+            String content = response.body().string();
             if (success) {
                 if (callback != null) {
                     ParameterizedType type = (ParameterizedType) callback.getClass().getGenericSuperclass();
@@ -229,7 +278,6 @@ public abstract class Request<T, R> implements Cloneable{
         if (mCacheStrategy != NET_ONLY && result.success && result.body != null && result.body instanceof Serializable) {
             saveCache(result.body);
         }
-
         return result;
     }
 

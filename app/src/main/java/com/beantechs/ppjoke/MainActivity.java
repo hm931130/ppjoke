@@ -1,6 +1,7 @@
 package com.beantechs.ppjoke;
 
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -8,6 +9,9 @@ import android.view.MenuItem;
 import com.beantechs.libnetwork.ApiResponse;
 import com.beantechs.libnetwork.ApiService;
 import com.beantechs.libnetwork.JsonCallback;
+import com.beantechs.libnetwork.PostRequest;
+import com.beantechs.libnetwork.Request;
+import com.beantechs.libnetwork.log.MyTestInterceptor;
 import com.beantechs.ppjoke.test.TestBean;
 import com.beantechs.ppjoke.utils.NavGraphBuilder;
 import com.beantechs.ppjoke.view.AppBottomBar;
@@ -21,6 +25,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -43,15 +49,29 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         NavGraphBuilder.build(navController, this, fragment.getId());
 
-        ApiService.get("shapes").execute(new JsonCallback<List<TestBean>>() {
-            @Override
-            public void onSuccess(ApiResponse<List<TestBean>> response) {
-                super.onSuccess(response);
-                List<TestBean> list = response.body;
+        ApiService.post("shapes")
+                .addHeader("hello", "world")
+                .addParams("name", "张飞")
+                .addParams("age", 10)
+                .execute(new JsonCallback<JSONObject>() {
+                    @Override
+                    public void onSuccess(ApiResponse<JSONObject> response) {
+                        super.onSuccess(response);
+                        Log.e("TAG", "onSuccess-" + response.toString());
+                    }
 
-                Log.e("TAG", list.size() + "");
-            }
-        });
+                    @Override
+                    public void onError(ApiResponse<JSONObject> response) {
+                        super.onError(response);
+                        Log.e("TAG", "onError-" + response.toString());
+                    }
+
+                    @Override
+                    public void onCacheSuccess(ApiResponse<JSONObject> response) {
+                        super.onCacheSuccess(response);
+                        Log.e("TAG", "onCacheSuccess-" + response.toString());
+                    }
+                });
 
 
     }
@@ -59,6 +79,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         navController.navigate(item.getItemId());
-        return TextUtils.isEmpty(item.getTitle());
+        return !TextUtils.isEmpty(item.getTitle());
     }
 }
