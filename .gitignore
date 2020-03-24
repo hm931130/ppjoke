@@ -8,4 +8,6 @@
 .externalNativeBuild
 .cxx
 gradlew*
+libnetwork/schemas/
+
 
