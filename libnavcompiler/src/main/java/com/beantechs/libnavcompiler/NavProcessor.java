@@ -130,7 +130,7 @@ public class NavProcessor extends AbstractProcessor {
                 isFragment = false;
             }
             if (destMap.containsKey(pageUrl)) {
-                messager.printMessage(Diagnostic.Kind.ERROR, "不同的页面不允许使用相同的pageUrl：" + clazName);
+//                messager.printMessage(Diagnostic.Kind.ERROR, "不同的页面不允许使用相同的pageUrl：" + clazName);
             } else {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("id", id);

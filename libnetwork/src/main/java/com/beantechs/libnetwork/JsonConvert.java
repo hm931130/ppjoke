@@ -16,12 +16,12 @@ public class JsonConvert implements Convert {
     public Object convert(String response, Type type) {
 
         JSONObject jsonObject = JSONObject.parseObject(response);
-        Object data = jsonObject.get("data");
-        return JSONObject.parseObject(data.toString(), type);
-//        if (data != null) {
-//            Object data1 = data.get("data");
-//            return JSONObject.parseObject(data1.toString(), type);
-//        }
-//        return null;
+        JSONObject data = jsonObject.getJSONObject("data");
+//        return JSONObject.parseObject(data.toString(), type);
+        if (data != null) {
+            Object data1 = data.get("data");
+            return JSONObject.parseObject(data1.toString(), type);
+        }
+        return null;
     }
 }
