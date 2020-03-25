@@ -28,10 +28,10 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     //兼容包
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    api 'androidx.appcompat:appcompat:1.1.0'
 
     //material组件
-    implementation 'com.google.android.material:material:1.1.0'
+    api 'com.google.android.material:material:1.1.0'
 
     //约束布局
     api 'androidx.constraintlayout:constraintlayout:1.1.3'

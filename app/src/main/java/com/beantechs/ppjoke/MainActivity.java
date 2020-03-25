@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //启用沉浸式布局，白底黑字
-        StatusBarUtils.fitSystemBar(this);
+//        StatusBarUtils.fitSystemBar(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         appBottomBar = findViewById(R.id.bottomBar);

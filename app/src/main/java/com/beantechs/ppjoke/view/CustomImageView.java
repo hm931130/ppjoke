@@ -64,7 +64,7 @@ public class CustomImageView extends AppCompatImageView {
 
 
     public void bindData(int widthPx, int heightPx, int marginLeft, String imageUrl) {
-        bindData(widthPx, heightPx, marginLeft, PixUtils.getScreenWidth(), PixUtils.getScreenWidth(), imageUrl);
+        bindData(widthPx, heightPx, PixUtils.getScreenWidth(), PixUtils.getScreenWidth(), marginLeft, imageUrl);
     }
 
     public void bindData(int widthPx, int heightPx, int maxWidth, int maxHeight, int leftMargin, String imageUrl) {
@@ -80,17 +80,17 @@ public class CustomImageView extends AppCompatImageView {
                 public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                     int width = resource.getIntrinsicWidth();
                     int height = resource.getIntrinsicHeight();
-                    setSize(width, height, maxWidth, maxHeight, leftMargin, imageUrl);
+                    setSize(width, height, maxWidth, maxHeight, leftMargin);
                     setImageDrawable(resource);
                 }
             });
             return;
         }
-        setSize(widthPx, heightPx, maxWidth, maxHeight, leftMargin, imageUrl);
+        setSize(widthPx, heightPx, maxWidth, maxHeight, leftMargin);
         setImageUrl(this, imageUrl, false);
     }
 
-    private void setSize(int width, int height, int maxWidth, int maxHeight, int leftMargin, String imageUrl) {
+    private void setSize(int width, int height, int maxWidth, int maxHeight, int leftMargin) {
         int finalWidth;
         int finalHeight;
         if (width > height) {

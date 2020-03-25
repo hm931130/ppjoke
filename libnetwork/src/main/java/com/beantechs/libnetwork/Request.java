@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.arch.core.executor.ArchTaskExecutor;
 
 
@@ -81,7 +82,7 @@ public abstract class Request<T, R extends Request> implements Cloneable {
         return (R) this;
     }
 
-    public R addParams(String key, Object value) {
+    public R addParam(String key, Object value) {
         if (value == null) {
             return (R) this;
         } else {
@@ -290,5 +291,9 @@ public abstract class Request<T, R extends Request> implements Cloneable {
         cacheKey = UrlCreator.createUrlFromParams(mUrl, params);
         return cacheKey;
     }
-
+    @NonNull
+    @Override
+    public Request clone() throws CloneNotSupportedException {
+        return (Request<T, R>) super.clone();
+    }
 }

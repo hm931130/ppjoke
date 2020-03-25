@@ -27,18 +27,14 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-
-
     implementation project(':libnavannotation')
     implementation project(':libcommon')
     implementation project(':libnetwork')
     annotationProcessor project(':libnavcompiler')
-
-
-
+    //QQ快捷登录
+    implementation files('libs/open_sdk_r6140_lite.jar')
 }
