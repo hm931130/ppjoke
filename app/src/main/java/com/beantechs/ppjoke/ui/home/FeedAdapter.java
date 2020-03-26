@@ -95,8 +95,6 @@ public class FeedAdapter extends AbsPagedListAdapter<Feed, FeedAdapter.ViewHolde
                 listPlayerView = videoBinding.listPlayerView;
                 videoBinding.listPlayerView.bindData(category, feed.width, feed.height, feed.cover, feed.url);
             }
-
-
         }
 
         public boolean isVideoItem() {

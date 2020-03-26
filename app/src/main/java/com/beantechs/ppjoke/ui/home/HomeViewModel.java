@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HomeViewModel extends AbsViewModel<Feed> {
 
 
-    private volatile boolean withCache = false;
+    private volatile boolean withCache = true;
     private MutableLiveData<PagedList<Feed>> cacheLiveData = new MutableLiveData<>();
     private AtomicBoolean loadAfter = new AtomicBoolean(false);
 

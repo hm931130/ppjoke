@@ -124,7 +124,7 @@ public abstract class Request<T, R extends Request> implements Cloneable {
         ParameterizedType parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();
         Type argument = parameterizedType.getActualTypeArguments()[1];
         if (argument == GetRequest.class) {
-            throw new RuntimeException("GET方法无需设置POST上传类型");
+            throw new RuntimeException("GET请求无需设置POST上传类型");
         }
         return (R) this;
     }
